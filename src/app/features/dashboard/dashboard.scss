@@ -1,0 +1,153 @@
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-base);
+  position: relative;
+
+  .sidebar {
+    width: 240px;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    padding: 24px 0;
+    position: fixed;
+    top: 56px; // Header height
+    left: -240px; // Hide by default on mobile
+    bottom: 0;
+    overflow-y: auto;
+    transition: left 0.3s ease;
+    z-index: 1000;
+
+    .user-profile {
+      padding: 0 16px 16px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--accent-color);
+        color: var(--bg-base);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        font-size: 20px;
+      }
+
+      .user-info {
+        .username {
+          color: var(--text-primary);
+          font-weight: 500;
+          font-size: 16px;
+        }
+
+        .email {
+          color: var(--text-secondary);
+          font-size: 13px;
+          margin-top: 2px;
+        }
+      }
+    }
+
+    .sidebar-nav {
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 24px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        font-size: 14px;
+        transition: all 0.2s;
+
+        i {
+          width: 20px;
+          font-size: 18px;
+          text-align: center;
+        }
+
+        &:hover {
+          background: var(--bg-hover);
+          color: var(--text-primary);
+        }
+
+        &.active {
+          background: var(--bg-hover);
+          color: var(--accent-color);
+        }
+
+        &.sign-out {
+          color: #ff4444;
+          
+          &:hover {
+            background: rgba(255, 68, 68, 0.1);
+          }
+        }
+      }
+
+      .nav-divider {
+        height: 1px;
+        background: var(--border-color);
+        margin: 8px 0;
+      }
+    }
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+  }
+
+  &.sidebar-open {
+    .sidebar {
+      left: 0;
+    }
+
+    .sidebar-overlay {
+      display: block;
+    }
+  }
+
+  .main-content {
+    flex: 1;
+    margin-left: 0; // No margin by default on mobile
+    padding: 24px;
+    min-height: calc(100vh - 56px); // Subtract header height
+  }
+
+  // Desktop styles
+  @media (min-width: 1024px) {
+    .sidebar {
+      left: 0; // Always show sidebar on desktop
+    }
+
+    .main-content {
+      margin-left: 240px; // Add margin for sidebar on desktop
+    }
+
+    .sidebar-overlay {
+      display: none !important; // Never show overlay on desktop
+    }
+  }
+}
+
+// The video gallery component will use its own styles
+app-video-gallery {
+  display: block;
+  margin-top: 24px;
+} 

@@ -6,6 +6,7 @@ import { AuthModalComponent } from './features/auth/auth-modal/auth-modal';
 import { LoginApiService } from '../lib/login/api';
 import { ProfileApiService } from '../lib/profile/api';
 import { ProfileUser } from '../lib/profile/types';
+import { SidebarService } from './shared/services/sidebar.service';
 
 @Component({
   selector: 'app-root',
@@ -27,7 +28,8 @@ export class AppComponent {
   constructor(
     private router: Router,
     private loginApi: LoginApiService,
-    private profileApi: ProfileApiService
+    private profileApi: ProfileApiService,
+    private sidebarService: SidebarService
   ) {
     this.loadUserProfile();
   }
@@ -49,6 +51,10 @@ export class AppComponent {
 
   toggleMenu() {
     this.showMenu = !this.showMenu;
+  }
+
+  toggleDashboardSidebar() {
+    this.sidebarService.toggleSidebar();
   }
 
   isLoggedIn(): boolean {

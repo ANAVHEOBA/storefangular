@@ -84,8 +84,8 @@ export class LoginComponent {
           this.success = response.success;
           this.message = response.message;
           if (response.success) {
-            // Redirect to home page after successful login
-            this.router.navigate(['/']);
+            // Redirect to dashboard after successful login
+            this.router.navigate(['/dashboard']);
           }
         },
         error: (error) => {

@@ -2,8 +2,7 @@
   <!-- Header -->
   <div class="header">
     <div class="left">
-      <!-- Menu button now shows profile menu when logged in -->
-      <button class="menu-button" (click)="toggleMenu()">
+      <button class="menu-button" (click)="toggleDashboardSidebar()">
         <i class="fas fa-bars"></i>
       </button>
       <a routerLink="/" class="logo">
@@ -12,53 +11,16 @@
       </a>
     </div>
 
-    <!-- Side Navigation Menu -->
-    <div class="side-nav" [class.open]="showMenu">
-      <div class="nav-header" *ngIf="isLoggedIn()">
-        <div class="user-info">
-          <div class="avatar">{{ getUserInitial() }}</div>
-          <div class="details">
-            <div class="username">{{ getCurrentUser()?.username || 'User' }}</div>
-            <div class="email">{{ getCurrentUser()?.email || '' }}</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="nav-items">
-        <a routerLink="/" class="nav-item">
-          <i class="fas fa-home"></i>
-          <span>Home</span>
-        </a>
-        
-        <!-- Show these items only when logged in -->
-        <ng-container *ngIf="isLoggedIn()">
-          <a routerLink="/profile" class="nav-item">
-            <i class="fas fa-user"></i>
-            <span>Your Channel</span>
-          </a>
-          <a routerLink="/settings" class="nav-item">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
-          </a>
-          <button class="nav-item" (click)="logout()">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Sign Out</span>
-          </button>
-        </ng-container>
-
-        <!-- Show sign in button when not logged in -->
-        <button *ngIf="!isLoggedIn()" class="nav-item sign-in" (click)="openAuthModal()">
-          <i class="fas fa-user-circle"></i>
-          <span>Sign In</span>
-        </button>
-      </div>
+    <!-- Right side of header -->
+    <div class="right">
+      <button *ngIf="!isLoggedIn()" class="sign-in-button" (click)="openAuthModal()">
+        <i class="fas fa-user-circle"></i>
+        <span>Sign In</span>
+      </button>
     </div>
-
-    <!-- Overlay for closing menu -->
-    <div class="overlay" *ngIf="showMenu" (click)="toggleMenu()"></div>
   </div>
 
-  <main [class.menu-open]="showMenu">
+  <main>
     <router-outlet></router-outlet>
   </main>
 

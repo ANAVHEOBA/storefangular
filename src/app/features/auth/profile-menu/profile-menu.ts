@@ -25,14 +25,19 @@ import { ProfileUser } from '../../../../lib/profile/types';
         </div>
         
         <div class="menu-items">
-          <a class="menu-item" routerLink="/profile">
+          <a class="menu-item" routerLink="/dashboard" (click)="toggleMenu()">
+            <i class="fas fa-th-large"></i>
+            Dashboard
+          </a>
+          <a class="menu-item" routerLink="/profile" (click)="toggleMenu()">
             <i class="fas fa-user"></i>
             Your Channel
           </a>
-          <a class="menu-item" routerLink="/settings">
+          <a class="menu-item" routerLink="/settings" (click)="toggleMenu()">
             <i class="fas fa-cog"></i>
             Settings
           </a>
+          <div class="divider"></div>
           <button class="menu-item" (click)="logout()">
             <i class="fas fa-sign-out-alt"></i>
             Sign Out
@@ -90,3 +95,5 @@ export class ProfileMenuComponent implements OnInit {
     this.router.navigate(['/']);
   }
 } 
+ 
+ 
