@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Observable, catchError, tap, throwError } from 'rxjs';
+import { Observable, catchError, tap, throwError, timer, retryWhen, mergeMap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { LoginRequest, LoginResponse, ApiError } from './types';
 
@@ -9,6 +9,10 @@ import { LoginRequest, LoginResponse, ApiError } from './types';
 })
 export class LoginApiService {
   private readonly apiUrl = environment.apiUrl;
+  private readonly TOKEN_KEY = 'token';
+  private readonly USER_KEY = 'user';
+  private retryDelay = 1000; // 1 second
+  private maxRetries = 3;
 
   constructor(private http: HttpClient) {}
 
@@ -27,12 +31,22 @@ export class LoginApiService {
       .pipe(
         tap(response => {
           if (response.success) {
-            // Store the token in localStorage
-            localStorage.setItem('token', response.token);
-            // Store user info
-            localStorage.setItem('user', JSON.stringify(response.user));
+            this.setToken(response.token);
+            this.setUser(response.user);
           }
         }),
+        retryWhen(errors =>
+          errors.pipe(
+            mergeMap((error, index) => {
+              // Only retry on rate limit (429) and up to maxRetries times
+              if (error.status === 429 && index < this.maxRetries) {
+                console.log(`Retrying login attempt ${index + 1} after ${this.retryDelay}ms`);
+                return timer(this.retryDelay * (index + 1));
+              }
+              return throwError(() => error);
+            })
+          )
+        ),
         catchError(this.handleError)
       );
   }
@@ -42,7 +56,22 @@ export class LoginApiService {
    * @returns boolean
    */
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+    const token = this.getToken();
+    if (!token) return false;
+
+    // Check if token is expired
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expiry = payload.exp * 1000; // Convert to milliseconds
+      if (Date.now() >= expiry) {
+        this.logout();
+        return false;
+      }
+      return true;
+    } catch {
+      this.logout();
+      return false;
+    }
   }
 
   /**
@@ -50,8 +79,13 @@ export class LoginApiService {
    * @returns User object or null
    */
   getCurrentUser() {
-    const userStr = localStorage.getItem('user');
-    return userStr ? JSON.parse(userStr) : null;
+    const userStr = localStorage.getItem(this.USER_KEY);
+    try {
+      return userStr ? JSON.parse(userStr) : null;
+    } catch {
+      this.logout();
+      return null;
+    }
   }
 
   /**
@@ -59,15 +93,31 @@ export class LoginApiService {
    * @returns string or null
    */
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return localStorage.getItem(this.TOKEN_KEY);
+  }
+
+  /**
+   * Set auth token
+   * @param token string
+   */
+  private setToken(token: string): void {
+    localStorage.setItem(this.TOKEN_KEY, token);
+  }
+
+  /**
+   * Set user data
+   * @param user User object
+   */
+  private setUser(user: any): void {
+    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
   }
 
   /**
    * Logout user
    */
   logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.USER_KEY);
   }
 
   /**
@@ -83,7 +133,11 @@ export class LoginApiService {
       errorMessage = error.error.message;
     } else {
       // Server-side error
-      errorMessage = error.error?.message || `Error Code: ${error.status}`;
+      if (error.status === 429) {
+        errorMessage = 'Too many attempts. Please wait a moment and try again.';
+      } else {
+        errorMessage = error.error?.message || `Error Code: ${error.status}`;
+      }
     }
 
     return throwError(() => ({

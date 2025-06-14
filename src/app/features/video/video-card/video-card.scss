@@ -1,9 +1,15 @@
 .video-card {
   cursor: pointer;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: border-color 0.2s, box-shadow 0.2s;
   width: 100%;
-  background-color: var(--bg-base);
   
   &:hover {
+    border-color: var(--border-color-hover);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
     .thumbnail {
       transform: scale(1.05);
     }
@@ -48,7 +54,7 @@
 }
 
 .video-info {
-  padding: 0 4px;
+  padding: 12px 4px;
 
   .title {
     color: var(--text-primary);

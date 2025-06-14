@@ -6,13 +6,9 @@
 
 .videos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 16px;
-  width: 100%;
-  padding: 24px 16px;
-  margin: 0 auto;
-  max-width: 2256px; // YouTube's max width
-  background-color: var(--bg-base);
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px 16px;
+  padding: 24px;
 }
 
 // Loading State
@@ -92,22 +88,15 @@
 }
 
 // Responsive adjustments
-@media (max-width: 1750px) {
+@media (max-width: 1200px) {
   .videos-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 768px) {
   .videos-grid {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  }
-}
-
-@media (max-width: 800px) {
-  .videos-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 12px;
-    padding: 16px 12px;
+    grid-template-columns: 1fr;
+    padding: 16px;
   }
 }

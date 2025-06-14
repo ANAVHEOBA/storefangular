@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { LoginApiService } from '../../../../lib/login/api';
 
 @Component({
@@ -62,16 +62,26 @@ export class LoginComponent {
   isLoading = false;
   message = '';
   success = false;
+  returnUrl: string;
 
   constructor(
     private fb: FormBuilder,
     private loginApi: LoginApiService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
+    // Get return url from route parameters or default to '/dashboard'
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]]
     });
+
+    // If already logged in, redirect
+    if (this.loginApi.isLoggedIn()) {
+      this.router.navigate([this.returnUrl]);
+    }
   }
 
   onSubmit() {
@@ -82,15 +92,19 @@ export class LoginComponent {
       this.loginApi.login(this.loginForm.value).subscribe({
         next: (response) => {
           this.success = response.success;
-          this.message = response.message;
           if (response.success) {
-            // Redirect to dashboard after successful login
-            this.router.navigate(['/dashboard']);
+            // Small delay to ensure token is saved before redirect
+            setTimeout(() => {
+              this.router.navigate([this.returnUrl]);
+            }, 100);
+          } else {
+            this.message = response.message || 'Login failed';
           }
         },
         error: (error) => {
           this.success = false;
-          this.message = error.message;
+          this.message = error.message || 'An error occurred during login';
+          console.error('Login error:', error);
         },
         complete: () => {
           this.isLoading = false;

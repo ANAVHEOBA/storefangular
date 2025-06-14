@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { VideoGalleryComponent } from '../video/video-gallery/video-gallery';
 import { ProfileApiService } from '../../../lib/profile/api';
 import { ProfileUser } from '../../../lib/profile/types';
 import { SidebarService } from '../../shared/services/sidebar.service';
@@ -10,7 +9,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, VideoGalleryComponent],
+  imports: [CommonModule, RouterModule],
   template: `
     <div class="dashboard-container" [class.sidebar-open]="isSidebarOpen">
       <!-- Sidebar -->
@@ -24,15 +23,19 @@ import { Subscription } from 'rxjs';
         </div>
 
         <nav class="sidebar-nav">
-          <a routerLink="/" class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+          <a routerLink="/dashboard" class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
             <i class="fas fa-home"></i>
             <span>Home</span>
           </a>
-          <a routerLink="/profile" class="nav-item" routerLinkActive="active">
+          <a routerLink="/dashboard/upload" class="nav-item" routerLinkActive="active">
+            <i class="fas fa-upload"></i>
+            <span>Upload Video</span>
+          </a>
+          <a routerLink="/dashboard/profile" class="nav-item" routerLinkActive="active">
             <i class="fas fa-user"></i>
             <span>Your Channel</span>
           </a>
-          <a routerLink="/settings" class="nav-item" routerLinkActive="active">
+          <a routerLink="/dashboard/settings" class="nav-item" routerLinkActive="active">
             <i class="fas fa-cog"></i>
             <span>Settings</span>
           </a>
@@ -49,7 +52,7 @@ import { Subscription } from 'rxjs';
 
       <!-- Main Content -->
       <main class="main-content">
-        <app-video-gallery></app-video-gallery>
+        <router-outlet></router-outlet>
       </main>
     </div>
   `,
@@ -100,7 +103,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    // Add logout functionality
+    localStorage.clear(); // Clear all stored data
     this.router.navigate(['/']);
   }
 } 
