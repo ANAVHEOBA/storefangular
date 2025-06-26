@@ -11,7 +11,7 @@ import { environment } from '../../../../environments/environment';
   imports: [CommonModule, VideoCardComponent],
   template: `
     <div class="my-videos-gallery">
-      <h2>My Videos</h2>
+      <h2>My Videos ({{ videos.length }} videos)</h2>
       @if (isLoading) {
         <div class="loading-state">
           <div class="spinner"></div>
@@ -23,8 +23,11 @@ import { environment } from '../../../../environments/environment';
         </div>
       } @else if (videos.length > 0) {
         <div class="videos-grid">
-          @for (video of videos; track video._id) {
-            <app-video-card [video]="mapVideo(video)"></app-video-card>
+          @for (video of videos; track video._id; let i = $index) {
+            <div class="video-wrapper">
+              <p>Video {{ i + 1 }}: {{ video.title }}</p>
+              <app-video-card [video]="mapVideo(video)"></app-video-card>
+            </div>
           }
         </div>
       } @else {
@@ -52,14 +55,18 @@ export class MyVideosComponent implements OnInit {
     this.error = null;
     this.myVideosApi.getMyVideos().subscribe({
       next: (response) => {
+        console.log('My videos response:', response);
         if (response.success) {
           this.videos = response.videos;
+          console.log('Videos loaded:', this.videos.length);
+          console.log('Videos data:', this.videos);
         } else {
           this.error = 'Failed to load videos.';
         }
         this.isLoading = false;
       },
       error: (err) => {
+        console.error('Error loading videos:', err);
         this.error = err.message || 'An error occurred while fetching your videos.';
         this.isLoading = false;
       }
@@ -67,19 +74,18 @@ export class MyVideosComponent implements OnInit {
   }
 
   mapVideo(videoDetails: VideoDetails) {
-    const baseUrl = environment.apiUrl.replace('/api', '');
-    return {
+    console.log('Mapping video:', videoDetails._id, videoDetails.title);
+    const mappedVideo = {
       id: videoDetails._id,
       title: videoDetails.title,
-      thumbnail: `${baseUrl}/${videoDetails.files.thumbnail.path}`,
-      duration: videoDetails.metadata.duration,
-      views: videoDetails.viewCount,
-      createdAt: new Date(videoDetails.createdAt),
-      cdnUrl: videoDetails.files.original.cdnUrl,
-      creator: {
-        id: videoDetails.userId,
-        username: 'You'
-      }
+      thumbnail: videoDetails.files?.thumbnail?.path || '',
+      duration: videoDetails.metadata?.duration || 0,
+      views: videoDetails.viewCount || 0,
+      createdAt: videoDetails.createdAt,
+      cdnUrl: videoDetails.files?.original?.cdnUrl || '',
+      creator: videoDetails.userId
     };
+    console.log('Mapped video:', mappedVideo);
+    return mappedVideo;
   }
 } 

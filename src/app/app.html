@@ -2,7 +2,7 @@
   <!-- Header -->
   <div class="header">
     <div class="left">
-      <button class="menu-button" (click)="toggleDashboardSidebar()">
+      <button class="menu-button" (click)="toggleDashboardSidebar()" style="z-index: 1000;">
         <i class="fas fa-bars"></i>
       </button>
       <a routerLink="/" class="logo">
@@ -23,6 +23,9 @@
   <main>
     <router-outlet></router-outlet>
 </main>
+
+  <!-- Sidebar -->
+  <app-sidebar></app-sidebar>
 
   <!-- Auth Modal -->
   <app-auth-modal *ngIf="showAuthModal" (close)="closeAuthModal()"></app-auth-modal>

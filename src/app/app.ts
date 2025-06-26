@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthModalComponent } from './features/auth/auth-modal/auth-modal';
+import { SidebarComponent } from './shared/components/sidebar/sidebar';
 import { LoginApiService } from '../lib/login/api';
 import { ProfileApiService } from '../lib/profile/api';
 import { ProfileUser } from '../lib/profile/types';
@@ -15,7 +16,8 @@ import { SidebarService } from './shared/services/sidebar.service';
     CommonModule,
     RouterOutlet,
     RouterModule,
-    AuthModalComponent
+    AuthModalComponent,
+    SidebarComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss'
@@ -54,7 +56,10 @@ export class AppComponent {
   }
 
   toggleDashboardSidebar() {
+    console.log('Hamburger menu clicked!');
+    console.log('Current sidebar state:', this.sidebarService.sidebarOpen$);
     this.sidebarService.toggleSidebar();
+    console.log('Sidebar toggled');
   }
 
   isLoggedIn(): boolean {

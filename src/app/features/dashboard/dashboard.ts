@@ -1,109 +1,54 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { ProfileApiService } from '../../../lib/profile/api';
 import { ProfileUser } from '../../../lib/profile/types';
 import { SidebarService } from '../../shared/services/sidebar.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="dashboard-container" [class.sidebar-open]="isSidebarOpen">
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <div class="user-profile">
-          <div class="avatar">{{ getUserInitial() }}</div>
-          <div class="user-info">
-            <div class="username">{{ user?.username || 'User' }}</div>
-            <div class="email">{{ user?.email || '' }}</div>
-          </div>
+    <div class="dashboard-container">
+      <div class="dashboard-header">
+        <h1>Dashboard</h1>
+        <p>Welcome back, {{ user?.username || 'User' }}!</p>
         </div>
 
-        <nav class="sidebar-nav">
-          <a routerLink="/dashboard" class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-          </a>
-          <a routerLink="/dashboard/upload" class="nav-item" routerLinkActive="active">
-            <i class="fas fa-upload"></i>
-            <span>Upload Video</span>
-          </a>
-          <a routerLink="/dashboard/profile" class="nav-item" routerLinkActive="active">
-            <i class="fas fa-user"></i>
-            <span>Your Channel</span>
-          </a>
-          <a routerLink="/dashboard/settings" class="nav-item" routerLinkActive="active">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
-          </a>
-          <div class="nav-divider"></div>
-          <button class="nav-item sign-out" (click)="logout()">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Sign Out</span>
-          </button>
-        </nav>
-      </aside>
-
-      <!-- Overlay for closing sidebar on mobile -->
-      <div class="sidebar-overlay" *ngIf="isSidebarOpen" (click)="closeSidebar()"></div>
-
-      <!-- Main Content -->
-      <main class="main-content">
+      <div class="dashboard-content">
         <router-outlet></router-outlet>
-      </main>
+      </div>
     </div>
   `,
   styleUrls: ['./dashboard.scss']
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit {
   user: ProfileUser | null = null;
-  isSidebarOpen = false;
-  private sidebarSubscription: Subscription;
 
   constructor(
     private profileApi: ProfileApiService,
-    private router: Router,
     private sidebarService: SidebarService
-  ) {
-    this.loadProfile();
-    this.sidebarSubscription = this.sidebarService.sidebarOpen$.subscribe(
-      isOpen => this.isSidebarOpen = isOpen
-    );
-  }
+  ) {}
 
   ngOnInit() {
-    // Component initialization logic
-  }
-
-  ngOnDestroy() {
-    if (this.sidebarSubscription) {
-      this.sidebarSubscription.unsubscribe();
+    this.loadProfile();
     }
-  }
 
-  getUserInitial(): string {
-    return this.user?.username?.charAt(0)?.toUpperCase() || 'U';
-  }
-
-  closeSidebar() {
-    this.sidebarService.setSidebarOpen(false);
+  toggleSidebar() {
+    this.sidebarService.toggleSidebar();
   }
 
   private loadProfile() {
     this.profileApi.getProfile().subscribe({
-      next: (response) => {
+      next: (response: any) => {
         if (response.success) {
           this.user = response.user;
         }
+      },
+      error: (error) => {
+        console.error('Failed to load profile:', error);
       }
     });
-  }
-
-  logout() {
-    localStorage.clear(); // Clear all stored data
-    this.router.navigate(['/']);
   }
 } 

@@ -30,6 +30,7 @@ export class LoginApiService {
       .post<LoginResponse>(`${this.apiUrl}/auth/login`, data, { headers })
       .pipe(
         tap(response => {
+          console.log('Login API response:', response);
           if (response.success) {
             this.setToken(response.token);
             this.setUser(response.user);

@@ -37,7 +37,7 @@ body {
   align-items: center;
   padding: 0 16px;
   height: 56px;
-  background: var(--bg-base);
+  background: var(--header-bg);
   position: fixed;
   top: 0;
   left: 0;
@@ -53,13 +53,13 @@ body {
     .menu-button {
       background: none;
       border: none;
-      color: var(--text-primary);
+      color: var(--primary-text);
       padding: 8px;
       cursor: pointer;
       border-radius: 50%;
 
       &:hover {
-        background: var(--bg-hover);
+        background: var(--hover-bg);
       }
 
       i {
@@ -71,7 +71,7 @@ body {
       display: flex;
       align-items: center;
       gap: 4px;
-      color: var(--text-primary);
+      color: var(--primary-text);
       text-decoration: none;
       font-size: 20px;
       font-weight: 500;
@@ -84,7 +84,6 @@ body {
   }
 
   .right {
-    .auth-section {
       .sign-in-button {
         display: flex;
         align-items: center;
@@ -103,15 +102,14 @@ body {
         }
 
         &:hover {
-          background: var(--accent-color-10);
-        }
+        background: var(--hover-bg);
       }
     }
   }
 }
 
 // Main content styles
-.main-content {
+main {
   margin-top: 56px;
   flex: 1;
   padding: 24px;
